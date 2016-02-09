@@ -35,24 +35,41 @@ function scene:create( event )
 	local crate = display.newImageRect( "crate.png", 90, 90 )
 	crate.x, crate.y = 160, -100
 	crate.rotation = 15
+
+	local crate2 = display.newImage( "bumper.png", 35, 35 )
+	crate2.x, crate2.y = 200, -100
+	crate2.rotation = 30
 	
 	-- add physics to the crate
 	physics.addBody( crate, { density=1.0, friction=0.3, bounce=0.3 } )
-	
+	physics.addBody( crate2, { density=3.0, friction=0, bounce=10})
 	-- create a grass object and add physics (with custom shape)
-	local grass = display.newImageRect( "grass.png", screenW, 82 )
+	local grass = display.newImageRect( "button.png", 250, 30 )
 	grass.anchorX = 0
 	grass.anchorY = 1
-	grass.x, grass.y = 0, display.contentHeight
+	grass.x, grass.y = -100, 250
+	grass.rotation = 45
+	
+	local grass2 = display.newImageRect( "grass.png", 250, 50 )
+	grass2.anchorX = 0
+	grass2.anchorY = 1
+	grass2.x, grass2.y = 100,400
+	grass2.rotation = -45
 	
 	-- define a shape that's slightly shorter than image bounds (set draw mode to "hybrid" or "debug" to see)
 	local grassShape = { -halfW,-34, halfW,-34, halfW,34, -halfW,34 }
 	physics.addBody( grass, "static", { friction=0.3, shape=grassShape } )
+
+	local grassShape2 = { -halfW,-34, halfW,-34, halfW,34, -halfW,34 }
+	physics.addBody( grass2, "static", { friction=0.3, shape=grassShape2 } )
+
 	
 	-- all display objects must be inserted into group
 	sceneGroup:insert( background )
 	sceneGroup:insert( grass)
 	sceneGroup:insert( crate )
+	sceneGroup:insert( grass2)
+	sceneGroup:insert( crate2 )
 end
 
 
