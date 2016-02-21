@@ -13,66 +13,11 @@ physics.start()
 local widget = require "widget"
 
 
--- [Title View]
-
-local titleBg
-local playBtn
-local creditsBtn
-local titleView
-
 -- [Credits]
 
-local creditsView
+--local creditsView
+local credit
 
--- [Walls]
-
-local l1
-local l2
-local l3
-local l4
-
-local r1
-local r2
-local r3
-local r4
-
--- [Ball]
-
-local ball 
-
--- [Hit Lines]
-
-local hitLine1
-local hitLine2
-
--- [Hit Balls]
-
-local hitBall1
-local hitBall2
-local hitBall3
-
--- [Paddles]
-
-local pLeft
-local pRight
-
--- [Paddle Buttons]
-
-local lBtn
-local rBtn
-
--- Score
-
-local score
-
--- Sounds
-
-local bell = audio.loadSound('bell.caf')
-local buzz = audio.loadSound('buzz.caf')
-
--- Variables
-
-local lastY
 
 -- 'onRelease' event listener for playBtn
 local function onPlayBtnRelease()
@@ -82,6 +27,21 @@ local function onPlayBtnRelease()
 	return true	-- indicates successful touch
 end
 
+local function onCredBtnRelease()
+		-- close credit window
+		credit:removeSelf()
+		credit = nil
+	return true
+end
+
+local function onCredBtnPress()
+		--open credit window
+		credit = display.newImage('credits.png', display.contentCenterx, display.contentCenterY)
+		credit.x = 250
+		credit.y = 250
+		credit:setFillColor(1,0,0)
+	return true
+end
 -- local function startButtonListeners(action)
 -- 	if(action == 'add') then
 -- 		playBtn:addEventListener('tap', showGameView)
@@ -122,8 +82,8 @@ function scene:create( event )
 
 	-- display a background image
 	local background = display.newImage('bg.png', display.contentCenterX, display.contentCenterY)
-	background.width = 480
-	background.height = 800
+	background.width = display.actualContentWidth
+	background.height = display.actualContentHeight
 	
 	-- create/position logo/title image on upper-half of the screen
 	local titleLogo = display.newImage('title.png', display.contentCenterX - 97, 96)
@@ -140,6 +100,24 @@ function scene:create( event )
 	playBtn.x = display.contentWidth*0.5
 	playBtn.y = display.contentHeight - 125
 
+	-- create widget button for credits (loads on release)
+	credBtn = widget.newButton{
+		label="Credits",
+		labelColor= { default={255}, over={128} },
+		default="creditsBtn.png",
+		over="creditsBtn.png",
+		width=154, height=40,
+		onPress = onCredBtnPress, -- event listener function
+		onRelease = onCredBtnRelease -- event listener function
+	}
+	credBtn.x = 250
+	credBtn.y = 700
+
+	-- all display objects must be inserted into group
+	sceneGroup:insert( background )
+	sceneGroup:insert( titleLogo )
+	sceneGroup:insert( playBtn )
+	sceneGroup:insert( credBtn )
 	--titleBg = display.newImage('title.png', display.contentCenterX - 97, 96)
 	--playBtn = display.newImage('playBtn.png', display.contentCenterX - 30, display.contentCenterY + 10)
 	--creditsBtn = display.newImage('creditsBtn.png', display.contentCenterX - 44.5, display.contentCenterY + 65)
@@ -150,81 +128,6 @@ function scene:create( event )
 	 --transition.to(titleView, {time = 300, x = -titleView.height, onComplete = function() startButtonListeners('rmv') display.remove(titleView) titleView = nil end})
     end
 
---     -- Left Wall Parts
-     
---     l1 = display.newImage('l1.png')
---     l2 = display.newImage('l2.png', 0, 214)
---     l3 = display.newImage('l3.png', 0, 273)
---     l4 = display.newImage('l4.png', 0, 387)
-
---     -- Right Wall Parts
- 
--- r1 = display.newImage('r1.png', 238, 0)
--- r2 = display.newImage('r2.png', 274, 214)
--- r3 = display.newImage('r3.png', 291, 273)
--- r4 = display.newImage('r4.png', 195, 387)
-
--- ball = display.newImage('ball.png', display.contentWidth * 0.5, 0)
--- hitLine1 = display.newImage('hitLine.png', 70, 28)
--- hitLine2 = display.newImage('hitLine.png', 110, 28)
-
--- -- Hit balls
- 
--- hitBall1 = display.newImage('hitBall.png', 160, 186)
--- hitBall2 = display.newImage('hitBall.png', 130, 236)
--- hitBall3 = display.newImage('hitBall.png', 187, 236)
--- hitBall1.name = 'hBall'
--- hitBall2.name = 'hBall'
--- hitBall3.name = 'hBall'
-
--- pLeft = display.newImage('paddleL.png', 74, 425)
--- pRight = display.newImage('paddleR.png', 183, 425)
--- pLeft.name = 'leftPaddle'
--- pRight.name = 'rightPaddle'
-
--- lBtn = display.newImage('lBtn.png', 20, 425)
--- rBtn = display.newImage('rBtn.png', 260, 425)
--- lBtn.name = 'left'
--- rBtn.name = 'right'
-
--- -- Score TextField
- 
--- score = display.newText('0', 2, 0, 'Marker Felt', 14)
--- score:setTextColor(255, 206, 0)
-
--- -- Left Wall Parts
- 
--- physics.addBody(l1, 'static', {shape = {-40, -107, -11, -107, 40, 70, 3, 106, -41, 106}})
--- physics.addBody(l2, 'static', {shape = {-23, -30, 22, -30, 22, 8, 6, 29, -23, 29}})
--- physics.addBody(l3, 'static', {shape = {-14, -56, 14, -56, 14, 56, -14, 56}})
--- physics.addBody(l4, 'static', {shape = {-62, -46, -33, -46, 61, 45, -62, 45}})
- 
--- -- Right Wall Parts
- 
--- physics.addBody(r1, 'static', {shape = {10, -107, 39, -107, 40, 106, -5, 106, -41, 70}})
--- physics.addBody(r2, 'static', {shape = {-22, -30, 22, -30, 22, 29, -6, 29, -23, 9}})
--- physics.addBody(r3, 'static', {shape = {-14, -56, 14, -56, 14, 56, -14, 56}})
--- physics.addBody(r4, 'static', {shape = {32, -46, 61, -46, 61, 45, -62, 45}})
-
--- physics.addBody(ball, 'dynamic', {radius = 8, bounce = 0.4})
--- physics.addBody(hitLine1, 'static', {shape = {-20, -42, -15, -49, -6, -46, 18, 39, 15, 44, 5, 44, }})
--- physics.addBody(hitLine2, 'static', {shape = {-20, -42, -15, -49, -6, -46, 18, 39, 15, 44, 5, 44, }})
--- physics.addBody(hitBall1, 'static', {radius = 15})
--- physics.addBody(hitBall2, 'static', {radius = 15})
--- physics.addBody(hitBall3, 'static', {radius = 15})
--- physics.addBody(pRight, 'static', {shape = {-33, 11, 27, -12, 32, 1}})
--- physics.addBody(pLeft, 'static', {shape = {-33, 1, -28, -12, 32, 11}})
-
--- -- Top Wall
- 
--- local topWall = display.newLine(display.contentWidth * 0.5, -1, display.contentWidth * 2, -1)
--- physics.addBody(topWall, 'static')
-	
--- 	-- all display objects must be inserted into group
--- 	sceneGroup:insert( background )
--- 	sceneGroup:insert( titleLogo )
--- 	sceneGroup:insert( playBtn )
--- end
 
 function scene:show( event )
 	local sceneGroup = self.view
@@ -266,6 +169,12 @@ function scene:destroy( event )
 		playBtn:removeSelf()	-- widgets must be manually removed
 		playBtn = nil
 	end
+
+	if credBtn then
+		credBtn:removeSelf()
+		credBtn = nil
+	end
+
 end
 
 ---------------------------------------------------------------------------------
