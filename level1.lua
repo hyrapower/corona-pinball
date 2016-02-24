@@ -96,7 +96,8 @@ function scene:create( event )
     l1 = display.newImage('l1.png')
     l2 = display.newImage('l2.png', 0, display.contentCenterY * .75)
     l3 = display.newImage('l3.png', 0, display.contentCenterY * 1.5)
-    l4 = display.newImage('l4.png', 0, display.contentCenterY * 2)
+    l4 = display.newImage('l4.png', 20, display.contentCenterY * 2)
+
 
   	-- Right Wall Parts
 
@@ -108,7 +109,7 @@ function scene:create( event )
 	
 	-- Ball shit
 
-	ball = display.newImage('ball.png', display.contentWidth * 0.5, 0)
+	ball = display.newImage('ball.png', display.contentWidth * 0.6, 0)
 	hitLine1 = display.newImage('hitLine.png', display.contentWidth - 150, display.contentHeight - 600)
 	hitLine2 = display.newImage('hitLine.png', display.contentWidth - 350, display.contentHeight - 600)
 
@@ -121,13 +122,19 @@ function scene:create( event )
 	hitBall2.name = 'hBall'
 	hitBall3.name = 'hBall'
 
-	pLeft = display.newImage('paddleL.png', display.contentCenterX + 100, display.contentCenterY * 2)
-	pRight = display.newImage('paddleR.png', display.contentCenterX - 100, display.contentCenterY * 2)
+	pLeft = display.newImage('paddleL.png', display.contentCenterX - 200, (display.contentCenterY * 2) - 50)
+	pRight = display.newImage('paddleR.png', display.contentCenterX + 100, (display.contentCenterY * 2) - 20)
+	pLeft.xScale = 2
+	pLeft.yScale = 2
+	pLeft.anchorY = 0
+	pLeft.anchorX = 0
+	pRight.anchorX= 1 
+	pRight.anchorY = 1
 	pLeft.name = 'leftPaddle'
 	pRight.name = 'rightPaddle'
 
-	lBtn = display.newImage('lBtn.png', display.contentCenterX + 150, display.contentCenterY * 2)
-	rBtn = display.newImage('rBtn.png', display.contentCenterX - 150, display.contentCenterY * 2)
+	lBtn = display.newImage('lBtn.png', display.contentCenterX - 150, (display.contentCenterY * 2) -50)
+	rBtn = display.newImage('rBtn.png', display.contentCenterX + 150, (display.contentCenterY * 2) -50)
 	lBtn.name = 'left'
 	rBtn.name = 'right'
 
@@ -137,7 +144,12 @@ function scene:create( event )
 	score:setTextColor(255, 206, 0)
 
 	-- Left Wall Parts
- 
+ 	-- https://docs.coronalabs.com/api/library/physics/addBody.html
+ 	-- Shape array containing the shape's vertices: { x1,y1, x2,y2, ..., xn,yn }.
+ 	-- For example pentagonShape = { 0,-37, 37,-10, 23,34, -23,34, -37,-10 }. 
+ 	-- The coordinates must be defined in clockwise order, and the resulting shape must be convex at all angle points. 
+ 	-- The physics engine assumes that the 0,0 point is the center of the object. 
+ 	-- A negative x will be to the left of object's center and a negative y will be top of object's center.
 	physics.addBody(l1, 'static', {shape = {-40, -107, -11, -107, 40, 70, 3, 106, -41, 106}})
 	physics.addBody(l2, 'static', {shape = {-23, -30, 22, -30, 22, 8, 6, 29, -23, 29}})
 	physics.addBody(l3, 'static', {shape = {-14, -56, 14, -56, 14, 56, -14, 56}})
@@ -185,6 +197,56 @@ function scene:create( event )
 	sceneGroup:insert(lBtn)
 	sceneGroup:insert(rBtn)
 	sceneGroup:insert(score)
+	gameListeners('add')
+end
+
+
+-- attempt to get the paddles working correctly
+function gameListeners(action)
+    if(action == 'add') then
+        lBtn:addEventListener('touch', movePaddle)
+        rBtn:addEventListener('touch', movePaddle)
+        ball:addEventListener('collision', onCollision)
+        Runtime:addEventListener('enterFrame', update)
+    else
+        lBtn:removeEventListener('touch', movePaddle)
+        rBtn:removeEventListener('touch', movePaddle)
+        ball:removeEventListener('collision', onCollision)
+        Runtime:removeEventListener('enterFrame', update)
+    end
+end
+
+function movePaddle(e)
+    if(e.phase == 'began' and e.target.name == 'left') then
+        pLeft.rotation = -40
+    elseif(e.phase == 'began' and e.target.name == 'right') then
+        pRight.rotation = 40
+    end
+    if(e.phase == 'ended') then
+        pLeft.rotation = 0
+        pRight.rotation = 0
+    end
+end
+
+function onCollision(e)
+    -- Shoot
+    -- if(e.phase == 'began' and e.other.name == 'leftPaddle' and e.other.rotation == -40) then
+    --     ball:applyLinearImpulse(0.05, 0.05, ball.y, ball.y)
+    -- elseif(e.phase == 'began' and e.other.name == 'rightPaddle' and e.other.rotation == 40) then
+    --     ball:applyLinearImpulse(0.05, 0.05, ball.y, ball.y)
+    -- end
+    -- if(e.phase == 'ended' and e.other.name == 'hBall') then
+    --     score.text = tostring(tonumber(score.text) + 100)
+    --     score:setReferencePoint(display.TopLeftReferencePoint)
+    --     score.x = 2
+    -- end
+end
+
+function update()
+    -- Check if ball hit bottom
+    if(ball.y > display.contentHeight) then
+        ball.y = 0
+    end
 end
 
 function scene:show( event )
@@ -237,6 +299,8 @@ scene:addEventListener( "create", scene )
 scene:addEventListener( "show", scene )
 scene:addEventListener( "hide", scene )
 scene:addEventListener( "destroy", scene )
+-- display.setDrawMode("wireframe", true)
+
 
 -----------------------------------------------------------------------------------------
 
