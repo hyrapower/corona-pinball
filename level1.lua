@@ -14,6 +14,17 @@ physics.start(); physics.pause()
 -- Widget
 local widget = require "widget"
 
+-- Usage example:
+--			local scaleFactor = 1.0
+--			local physicsData = (require "shapedefs").physicsData(scaleFactor)
+--			local shape = display.newImage("objectname.png")
+--			physics.addBody( shape, physicsData:get("objectname") )
+--
+
+-- require physics.lua to import all of the hitboxes created for the spritesheets
+local scaleFactor = 1.0
+local physicsData = (require 'spritePhysics').physicsData(scaleFactor)
+
 -- [Title View]
 
 local titleBg
@@ -28,10 +39,14 @@ local l2
 local l3
 local l4
 
+local l5
+
 local r1
 local r2
 local r3
 local r4
+
+local r5
 
 -- [Hit Lines]
 
@@ -93,20 +108,23 @@ function scene:create( event )
 
 	 -- Left Wall Parts
      
-    l1 = display.newImage('l1.png')
-    l2 = display.newImage('l2.png', 0, display.contentCenterY * .75)
-    l3 = display.newImage('l3.png', 0, display.contentCenterY * 1.5)
-    l4 = display.newImage('l4.png', 20, display.contentCenterY * 2)
+    l1 = display.newImage('l1.png', 40, 60)
+    l2 = display.newImage('l2.png', 20, display.contentCenterY - 45)
+    l3 = display.newImage('l3.png', 0, display.contentCenterY * 1.6)
+    l4 = display.newImage('l4.png', 50, display.contentCenterY * 2)
 
+    l5 = display.newImage('l3.png', 5, display.contentCenterY * 1.15)
 
   	-- Right Wall Parts
 
-    r1 = display.newImage('r1.png', display.actualContentWidth, display.contentScaleY)
-	r2 = display.newImage('r2.png', display.actualContentWidth, display.contentCenterY * .75)
-	r3 = display.newImage('r3.png', display.actualContentWidth, display.contentCenterY * 1.5)
-	r4 = display.newImage('r4.png', display.actualContentWidth, display.contentCenterY * 2)
+    r1 = display.newImage('r1.png', display.actualContentWidth - 40, display.contentScaleY + 60)
+	r2 = display.newImage('r2.png', display.actualContentWidth - 20, display.contentCenterY - 45)
+	r3 = display.newImage('r3.png', display.actualContentWidth, display.contentCenterY * 1.6)
+	r4 = display.newImage('r4.png', display.actualContentWidth - 50, display.contentCenterY * 2)
 
-	
+
+    r5 = display.newImage('r3.png', display.actualContentWidth - 5, display.contentCenterY * 1.15)
+
 	-- Ball shit
 
 	ball = display.newImage('ball.png', display.contentWidth * 0.6, 0)
@@ -122,10 +140,12 @@ function scene:create( event )
 	hitBall2.name = 'hBall'
 	hitBall3.name = 'hBall'
 
-	pLeft = display.newImage('paddleL.png', display.contentCenterX - 200, (display.contentCenterY * 2) - 50)
-	pRight = display.newImage('paddleR.png', display.contentCenterX + 100, (display.contentCenterY * 2) - 20)
-	pLeft.xScale = 2
-	pLeft.yScale = 2
+	pLeft = display.newImage('paddleL.png', display.contentCenterX - 90, display.contentCenterY * 2.05)
+	pRight = display.newImage('paddleR.png', display.contentCenterX + 90, (display.contentCenterY * 2.2)-10)
+	-- pLeft.xScale = 2
+	-- pLeft.yScale = 2	
+	-- pRight.xScale = 2
+	-- pRight.yScale = 2
 	pLeft.anchorY = 0
 	pLeft.anchorX = 0
 	pRight.anchorX= 1 
@@ -133,8 +153,8 @@ function scene:create( event )
 	pLeft.name = 'leftPaddle'
 	pRight.name = 'rightPaddle'
 
-	lBtn = display.newImage('lBtn.png', display.contentCenterX - 150, (display.contentCenterY * 2) -50)
-	rBtn = display.newImage('rBtn.png', display.contentCenterX + 150, (display.contentCenterY * 2) -50)
+	lBtn = display.newImage('lBtn.png', display.contentCenterX - 50, display.contentCenterY * 2 )
+	rBtn = display.newImage('rBtn.png', display.contentCenterX + 50, display.contentCenterY * 2  )
 	lBtn.name = 'left'
 	rBtn.name = 'right'
 
@@ -150,30 +170,33 @@ function scene:create( event )
  	-- The coordinates must be defined in clockwise order, and the resulting shape must be convex at all angle points. 
  	-- The physics engine assumes that the 0,0 point is the center of the object. 
  	-- A negative x will be to the left of object's center and a negative y will be top of object's center.
-	physics.addBody(l1, 'static', {shape = {-40, -107, -11, -107, 40, 70, 3, 106, -41, 106}})
-	physics.addBody(l2, 'static', {shape = {-23, -30, 22, -30, 22, 8, 6, 29, -23, 29}})
-	physics.addBody(l3, 'static', {shape = {-14, -56, 14, -56, 14, 56, -14, 56}})
-	physics.addBody(l4, 'static', {shape = {-62, -46, -33, -46, 61, 45, -62, 45}})
+	physics.addBody(l1, 'static', physicsData:get("l1"))
+	physics.addBody(l2, 'static', physicsData:get("l2"))
+	physics.addBody(l3, 'static', physicsData:get("l3"))
+	physics.addBody(l4, 'static', physicsData:get("l4"))
+	physics.addBody(l5, 'static', physicsData:get("l3"))
  
 	-- Right Wall Parts
  
-	physics.addBody(r1, 'static', {shape = {10, -107, 39, -107, 40, 106, -5, 106, -41, 70}})
-	physics.addBody(r2, 'static', {shape = {-22, -30, 22, -30, 22, 29, -6, 29, -23, 9}})
-	physics.addBody(r3, 'static', {shape = {-14, -56, 14, -56, 14, 56, -14, 56}})
-	physics.addBody(r4, 'static', {shape = {32, -46, 61, -46, 61, 45, -62, 45}})
+	physics.addBody(r1, 'static', physicsData:get("r1"))
+	physics.addBody(r2, 'static', physicsData:get("r2"))
+	physics.addBody(r3, 'static', physicsData:get("r3"))
+	physics.addBody(r4, 'static', physicsData:get("r4"))
+	physics.addBody(r5, 'static', physicsData:get("r3"))
 
 	physics.addBody(ball, 'dynamic', {radius = 8, bounce = 0.4})
-	physics.addBody(hitLine1, 'static', {shape = {-20, -42, -15, -49, -6, -46, 18, 39, 15, 44, 5, 44, }})
-	physics.addBody(hitLine2, 'static', {shape = {-20, -42, -15, -49, -6, -46, 18, 39, 15, 44, 5, 44, }})
-	physics.addBody(hitBall1, 'static', {radius = 15})
-	physics.addBody(hitBall2, 'static', {radius = 15})
-	physics.addBody(hitBall3, 'static', {radius = 15})
-	physics.addBody(pRight, 'static', {shape = {-33, 11, 27, -12, 32, 1}})
-	physics.addBody(pLeft, 'static', {shape = {-33, 1, -28, -12, 32, 11}})
+	physics.addBody(hitLine1, 'static', physicsData:get("hitLine"))
+	physics.addBody(hitLine2, 'static', physicsData:get("hitLine"))
+	physics.addBody(hitBall1, 'static', physicsData:get("hitBall"))
+	physics.addBody(hitBall2, 'static', physicsData:get("hitBall"))
+	physics.addBody(hitBall3, 'static', physicsData:get("hitBall"))
+
+	physics.addBody(pRight, 'static', physicsData:get("paddleR"))
+	physics.addBody(pLeft, 'static', physicsData:get("paddleL"))
 
 	-- Top Wall
  
-	local topWall = display.newLine(display.contentWidth * 0.5, -1, display.contentWidth * 2, -1)
+	local topWall = display.newLine(display.contentWidth, -1, display.contentWidth * 2, -1)
 	physics.addBody(topWall, 'static')
 	
 	-- all display objects must be inserted into group
@@ -230,11 +253,11 @@ end
 
 function onCollision(e)
     -- Shoot
-    -- if(e.phase == 'began' and e.other.name == 'leftPaddle' and e.other.rotation == -40) then
-    --     ball:applyLinearImpulse(0.05, 0.05, ball.y, ball.y)
-    -- elseif(e.phase == 'began' and e.other.name == 'rightPaddle' and e.other.rotation == 40) then
-    --     ball:applyLinearImpulse(0.05, 0.05, ball.y, ball.y)
-    -- end
+    if(e.phase == 'began' and e.other.name == 'leftPaddle' and e.other.rotation == -40) then
+        ball:applyLinearImpulse(0.05, 0.05, ball.y, ball.y)
+    elseif(e.phase == 'began' and e.other.name == 'rightPaddle' and e.other.rotation == 40) then
+        ball:applyLinearImpulse(0.05, 0.05, ball.y, ball.y)
+    end
     -- if(e.phase == 'ended' and e.other.name == 'hBall') then
     --     score.text = tostring(tonumber(score.text) + 100)
     --     score:setReferencePoint(display.TopLeftReferencePoint)
@@ -244,7 +267,7 @@ end
 
 function update()
     -- Check if ball hit bottom
-    if(ball.y > display.contentHeight) then
+    if(ball.y > display.contentHeight + 50) then
         ball.y = 0
     end
 end
